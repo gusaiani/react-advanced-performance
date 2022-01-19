@@ -1,6 +1,3 @@
-// React.memo for reducing unnecessary re-renders
-// http://localhost:3000/isolated/exercise/03.js
-
 import * as React from 'react'
 import {useCombobox} from '../use-combobox'
 import {getItems} from '../workerized-filter-cities'
@@ -58,7 +55,21 @@ function ListItem({
   )
 }
 
-ListItem = React.memo(ListItem)
+ListItem = React.memo(ListItem, (prevProps, nextProps) => {
+  if (prevProps.getItemProps !== nextProps.getItemProps) return false
+  if (prevProps.items !== nextProps.items) return false
+  if (prevProps.index !== nextProps.index) return false
+  if (prevProps.selectedItem !== nextProps.selectedItem) return false
+
+  if (prevProps.highlightedIndex !== nextProps.highlightedIndex) {
+    const wasPreviouslyHighlighted =
+      prevProps.highlightedIndex === prevProps.index
+    const isNowHighlighted = nextProps.highlightedIndex === nextProps.index
+    return wasPreviouslyHighlighted === isNowHighlighted
+  }
+
+  return true
+})
 
 function App() {
   const forceRerender = useForceRerender()
